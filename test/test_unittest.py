@@ -1,13 +1,20 @@
+"""
+test_unittest.py — Unittest tests for temperature_converter.py
+"""
+
 import sys
 import os
+import unittest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-import unittest
 from src.temperature_converter import (
     celsius_to_fahrenheit, fahrenheit_to_celsius,
     celsius_to_kelvin, kelvin_to_celsius,
-    fahrenheit_to_kelvin, kelvin_to_fahrenheit
+    fahrenheit_to_kelvin, kelvin_to_fahrenheit,
+    is_valid_kelvin, get_all_conversions
 )
+
 
 class TestTemperatureConverter(unittest.TestCase):
 
@@ -36,6 +43,29 @@ class TestTemperatureConverter(unittest.TestCase):
     def test_kelvin_to_fahrenheit(self):
         self.assertAlmostEqual(kelvin_to_fahrenheit(273.15), 32.0, places=2)
         self.assertAlmostEqual(kelvin_to_fahrenheit(373.15), 212.0, places=2)
+
+    def test_is_valid_kelvin(self):
+        self.assertTrue(is_valid_kelvin(0))
+        self.assertTrue(is_valid_kelvin(300))
+        self.assertFalse(is_valid_kelvin(-1))
+
+    def test_get_all_conversions(self):
+        result = get_all_conversions(0)
+        self.assertEqual(result["celsius"], 0)
+        self.assertEqual(result["fahrenheit"], 32.0)
+        self.assertEqual(result["kelvin"], 273.15)
+
+    def test_invalid_input_raises_error(self):
+        with self.assertRaises(ValueError):
+            celsius_to_fahrenheit("hot")
+        with self.assertRaises(ValueError):
+            kelvin_to_celsius(-5)
+
+    def test_body_temperature(self):
+        """Human body temperature: 37°C = 98.6°F = 310.15K"""
+        self.assertAlmostEqual(celsius_to_fahrenheit(37), 98.6, places=1)
+        self.assertAlmostEqual(celsius_to_kelvin(37), 310.15, places=2)
+
 
 if __name__ == '__main__':
     unittest.main()
